@@ -14,7 +14,7 @@ public class FibonacciTuples {
 
   private static void usingStreamGenerate() {
 
-    Supplier<Integer> intSupplier = new Supplier<>() {
+    Supplier<Integer> intSupplier = new Supplier<Integer>() {
 
       private int previous = 0;
       private int current = 1;
