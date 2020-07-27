@@ -1,70 +1,17 @@
-package com.codechef.january20b;
-
-import static java.util.stream.Collectors.toList;
+package com.codechef.utils;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-class ENGLISH {
+public class BoilerPlate {
 
   public static void main(String[] args) {
     Print print = new Print();
     Scan scan = new Scan();
 
-    int testCases = scan.scanInt();
-    IntStream.range(0, testCases).forEach(test -> {
-      int numWords = scan.scanInt();
-      List<String> words = IntStream.range(0, numWords).mapToObj(index -> scan.scanString())
-          .collect(toList());
-      print.printLine("" + solve(numWords, words));
-    });
-    print.close();
-  }
-
-  private static long solve(int numWords, List<String> words) {
-    return createPairs(words, 0);
-  }
-
-  private static long createPairs(List<String> words, int currentLevel) {
-
-    long answer = 0L;
-    List<String> toBeProcessedWords = words.stream()
-        .filter(word -> word.length() > currentLevel).collect(toList());
-
-    long terminatedWords = words.size() - toBeProcessedWords.size();
-
-    Map<String, List<String>> wordLevelGrouping = toBeProcessedWords.stream()
-        .collect(Collectors.groupingBy(word -> word.charAt(currentLevel) + Character
-            .toString(word.charAt(word.length() - currentLevel - 1))));
-
-    long readyToPairWords = wordLevelGrouping.keySet().stream()
-        .filter(key -> wordLevelGrouping.get(key).size() < 2).count();
-
-    long discards = 0;
-    for (String key : wordLevelGrouping.keySet()) {
-      List<String> wordSet = wordLevelGrouping.get(key);
-      if (wordSet.size() >= 2) {
-        discards += wordSet.size() % 2;
-        answer += createPairs(wordLevelGrouping.get(key), currentLevel + 1);
-      }
-    }
-
-    readyToPairWords += terminatedWords;
-    readyToPairWords += discards;
-    long readyToPairWordPairs = readyToPairWords / 2;
-
-    answer += (Math.pow(currentLevel, 2) * readyToPairWordPairs);
-
-    //System.out.println(words + ">>" + answer);
-
-    return answer;
   }
 
   static class Scan {

@@ -1,18 +1,18 @@
-package com.codechef.january20b;
-
-import static java.util.stream.Collectors.toList;
+package com.codechef.januarycookoff20b;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-class ENGLISH {
+class EXAMCHT {
 
   public static void main(String[] args) {
     Print print = new Print();
@@ -20,51 +20,46 @@ class ENGLISH {
 
     int testCases = scan.scanInt();
     IntStream.range(0, testCases).forEach(test -> {
-      int numWords = scan.scanInt();
-      List<String> words = IntStream.range(0, numWords).mapToObj(index -> scan.scanString())
-          .collect(toList());
-      print.printLine("" + solve(numWords, words));
+      int a = scan.scanInt();
+      int b = scan.scanInt();
+
+      print.printLine("" + solve(Math.abs(b - a)));
     });
     print.close();
   }
 
-  private static long solve(int numWords, List<String> words) {
-    return createPairs(words, 0);
+  private static long solve(int number) {
+    long answer = 1;
+    List<Integer> factors = getPrimeFactors(number);
+
+    Map<Integer, Long> factorCount = factors.stream()
+        .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+    for (int factor : factorCount.keySet()) {
+      answer *= (factorCount.get(factor) + 1);
+    }
+    return answer;
   }
 
-  private static long createPairs(List<String> words, int currentLevel) {
+  private static List<Integer> getPrimeFactors(int number) {
 
-    long answer = 0L;
-    List<String> toBeProcessedWords = words.stream()
-        .filter(word -> word.length() > currentLevel).collect(toList());
+    List<Integer> data = new ArrayList<>();
+    while (number % 2 == 0) {
+      data.add(2);
+      number /= 2;
+    }
 
-    long terminatedWords = words.size() - toBeProcessedWords.size();
-
-    Map<String, List<String>> wordLevelGrouping = toBeProcessedWords.stream()
-        .collect(Collectors.groupingBy(word -> word.charAt(currentLevel) + Character
-            .toString(word.charAt(word.length() - currentLevel - 1))));
-
-    long readyToPairWords = wordLevelGrouping.keySet().stream()
-        .filter(key -> wordLevelGrouping.get(key).size() < 2).count();
-
-    long discards = 0;
-    for (String key : wordLevelGrouping.keySet()) {
-      List<String> wordSet = wordLevelGrouping.get(key);
-      if (wordSet.size() >= 2) {
-        discards += wordSet.size() % 2;
-        answer += createPairs(wordLevelGrouping.get(key), currentLevel + 1);
+    for (int i = 3; i <= Math.sqrt(number); i += 2) {
+      while (number % i == 0) {
+        data.add(i);
+        number /= i;
       }
     }
 
-    readyToPairWords += terminatedWords;
-    readyToPairWords += discards;
-    long readyToPairWordPairs = readyToPairWords / 2;
+    if (number > 2) {
+      data.add(number);
+    }
 
-    answer += (Math.pow(currentLevel, 2) * readyToPairWordPairs);
-
-    //System.out.println(words + ">>" + answer);
-
-    return answer;
+    return data;
   }
 
   static class Scan {
